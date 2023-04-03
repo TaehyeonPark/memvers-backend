@@ -19,7 +19,7 @@ class Nugu(BaseModel):
 class Footprint(BaseModel):
     nickname: str
     history: str
-    join: bool
+    joinDate: bool
     project: str
     pm: str
     promotion: str
@@ -30,8 +30,32 @@ class Achivement(BaseModel):
 
 class Stack(BaseModel):
     nickname: str
-    stack: str
+    stackName: str
 
 class Outlink(BaseModel):
     nickname: str
-    outlink: str
+    outLink: str
+
+
+class INSERT(BaseModel):
+    Nugu: Nugu
+
+    Footprint: Footprint
+    Achivement: Achivement
+    Stack: Stack
+    Outlink: Outlink
+
+    # history: str # Footprint
+    # joinDate: bool
+    # project: str
+    # pm: str
+    # promotion: str
+
+    # content: str # Achivement
+    
+    # stackName: str # Stack
+
+    # outlink: str # Outlink
+
+
+SCHEMAS = [Nugu, Footprint, Achivement, Stack, Outlink, INSERT]
