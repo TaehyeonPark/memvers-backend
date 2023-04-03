@@ -58,8 +58,23 @@ class Comp():
         return not self.comp_int_contain(value1, value2)
     
 class Validate():
-    def duplicate(self, db_list: list, key: str = Nugu.nickname, value: str = None) -> bool:
-        pass
+    PK = Nugu.nickname.__str__().split('.')[-1]
+
+    def __init__(self, PK: str = None):
+        self.PK = PK if PK is not None else self.PK
+
+    def duplicate(self, db_list: list, key: str = Nugu.nickname.__str__().split('.')[-1]) -> bool:
+        hash_set = set()
+        new_db_list = []
+        
+        for db_nugu in db_list:
+            if db_nugu[key] not in hash_set:
+                hash_set.add(db_nugu[key])
+                new_db_list.append(db_nugu)
+
+        return new_db_list
+                
+            
         
             
         

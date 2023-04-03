@@ -3,9 +3,12 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 import models, schema
-from util import Comp
+from util import Comp, Validate
+
+PK = models.Nugu.nickname.__str__().split(".")[-1]
 
 comp = Comp()
+val = Validate(PK=PK)
 
 def exist_nugu(db: Session, key: str = None, value: str = None):
     keys = schema.Nugu.__fields__.keys()
@@ -19,9 +22,8 @@ def exist_nugu(db: Session, key: str = None, value: str = None):
     return False
 
 def get_nugu(db: Session, key: str = None, value: str = None, mode: str = "exact"):
+    
     mode = "exact" if mode not in comp.MODES else mode
-    print(f"mode: {mode}")
-    print("*" * 50)
     keys = schema.Nugu.__fields__.keys()
     db_nugu = None
 
@@ -34,7 +36,7 @@ def get_nugu(db: Session, key: str = None, value: str = None, mode: str = "exact
                 # return db_nugu
                 db_list.append(db_nugu)
         if len(db_list) > 0:
-            return db_list
+            return val.duplicate(db_list=db_list)
     else:
         db_list = []
         for db_nugu in db.query(models.Nugu).all():
@@ -44,9 +46,10 @@ def get_nugu(db: Session, key: str = None, value: str = None, mode: str = "exact
                 if comp.comp(db_nugu[key], value, mode=mode):
                     db_list.append(db_nugu)
         if len(db_list) > 0:
-            return db_list
+            return val.duplicate(db_list=db_list)
         db_nugu = None
-    return db_nugu
+
+    return val.duplicate(db_list=db_list)
 
 def insert_nugu(db: Session, nugu: schema.Nugu):
     db_nugu = models.Nugu(**nugu.dict())
