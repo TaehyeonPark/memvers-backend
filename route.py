@@ -35,9 +35,6 @@ async def get_nugu(key: str = None, value: str = None, mode: str = "exact", db: 
 # async def edit_nugu(nugu: schema.Nugu, db: Session = fastapi.Depends(get_db)):
 #     return {"detail": f"{nugu.nickname} already registered"} if crud.exist_nugu(db, key="nickname", value=nugu.nickname) else crud.update_nugu(db=db, nugu=nugu)
 
-# @app.post("/api/v1/nugu/update")
-# async def edit_nugu(nugu: schema.Nugu, db: Session = fastapi.Depends(get_db)):
-#     return {"detail": f"{nugu.nickname} already registered"} if crud.exist_nugu(db, key="nickname", value=nugu.nickname) else crud.update_nugu(db=db, nugu=nugu)
 @app.get("/api/v1/nugu/update/{nickname}")
 async def edit_nugu(nickname: str, nugu: schema.Nugu, db: Session = fastapi.Depends(get_db)):
     return {"detail": f"{nugu.nickname} already registered"} if crud.exist_nugu(db, key="nickname", value=nugu.nickname) else crud.update_nugu(db=db, nugu=nugu)
