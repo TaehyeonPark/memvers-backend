@@ -42,7 +42,7 @@ def insert(db: Session, table: str = None, data: Dict = None):
     except Exception as e:
         return {"status": 500, "message": f"REQ | {table} | {e}"}
 
-def update(db: Session, table: str = None, data: Dict = None):
+def update(db: Session, table: str = None, data: Dict = None): # Needed: Different edition level by privilige.
     try:
         update_list = []
         for key, value in data.items():
@@ -53,5 +53,15 @@ def update(db: Session, table: str = None, data: Dict = None):
             update_list.append(f"{key}={value}")
         rtn, msg = _execute(db=db, query=text(f"UPDATE {table} SET {', '.join(update_list)} WHERE {PK}='{data['nickname']}'"))
         return msg if rtn else {"status": 500, "message": f"REQ | {table} | {msg}"}
+    except Exception as e:
+        return {"status": 500, "message": f"REQ | {table} | {e}"}
+    
+def read(db: Session, table: str = None, data: Dict = None, mode: str = "exact"):
+    try:
+        rtn = []
+        cursor = db.execute(text(f"SELECT * FROM {table} WHERE {PK}='{data['nickname']}'"))
+        for row in cursor.fetchall():
+            rtn.append(dict(row))
+        return {"status": 200, "message": f"REQ | {table} | {rtn}"}
     except Exception as e:
         return {"status": 500, "message": f"REQ | {table} | {e}"}
