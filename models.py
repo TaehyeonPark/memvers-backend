@@ -20,54 +20,38 @@ class Nugu(Base):
     rnk=Column(Integer, default=0, nullable=not True) # 0: 준회원 1: 정회원 2: 명예회원
     hide=Column(Boolean, default=True, nullable=not True)
 
-    nickname.primary_key = True
-    relationship("Footprint", backref="nugu")
-    relationship("Achivement", backref="nugu")
-    relationship("Stack", backref="nugu")
-    relationship("Outlink", backref="nugu")
-        
 
-class Footprint(Base):
+class Footprint():
     __tablename__ = 'footprint'
     
-    nickname=Column(String(length=20), ForeignKey('nugu.nickname'), primary_key=True)
+    nickname=Column(String(length=20), nullable=not True)
     history=Column(String(length=100))
     joinDate=Column(Boolean, default=True, nullable=not True)
     project=Column(String(length=100))
     pm=Column(String(length=20))
     promotion=Column(String(length=40))
 
-    nickname.primary_key = True
-    relationship("Nugu", backref="footprint")
 
-
-class Achivement(Base):
+class Achivement():
     __tablename__ = 'achivement'
 
-    nickname=Column(String(length=20), ForeignKey('nugu.nickname'), primary_key=True)
+    nickname=Column(String(length=20), nullable=not True)
     content=Column(String(length=100), nullable=not True)
 
-    nickname.primary_key = True
-    relationship("Nugu", backref="footprint")
 
-
-class Stack(Base):
+class Stack():
     __tablename__ = 'stack'
     
-    nickname=Column(String(length=20), ForeignKey('nugu.nickname'), primary_key=True)
+    nickname=Column(String(length=20), nullable=not True)
     stackName=Column(String(length=20), nullable=not True)
 
-    nickname.primary_key = True
-    relationship("Nugu", backref="footprint")
 
-
-class Outlink(Base):
+class Outlink():
     __tablename__ = 'outlink'
 
-    nickname=Column(String(length=20), ForeignKey('nugu.nickname'), primary_key=True)
+    nickname=Column(String(length=20), nullable=not True)
     outLink=Column(String(length=100), nullable=not True)
 
-    nickname.primary_key = True
-    relationship("Nugu", backref="footprint")
-
 ORMS = [Nugu, Footprint, Achivement, Stack, Outlink]
+TABLES = [table.__tablename__ for table in ORMS]
+KEYS = [{ORM.__tablename__ : [key for key in ORM.__dict__.keys() if not key.startswith('_')]} for ORM in ORMS]

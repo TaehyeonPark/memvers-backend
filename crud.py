@@ -2,6 +2,8 @@
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from typing import Dict
+
 import models, schema
 from util import Comp, Validate
 
