@@ -15,6 +15,16 @@ async def create(nickname: str, table: str, data: Dict[str, Any], db: Session = 
     if nickname == data["nickname"]:
         return {"status": 200, "message": "Server is running"}
     return {"status": 400, "message": "Something went wrong"}
+
+
+
+
+
+
+
+
+
+
 @app.get("/api/v1/nugu/create")
 async def create_nugu(nugu: schema.INSERT = None, db: Session = fastapi.Depends(get_db)):
     print(nugu)
