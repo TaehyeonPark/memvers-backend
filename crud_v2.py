@@ -13,24 +13,13 @@ HANDLER = ["create", "read", "update"]
 comp = Comp()
 val = Validate(PK=PK)
 
-def _exist(db: Session, table: str = None, key: str = None, value: str = None):
-    if table not in models.TABLES:
-        return {"status": 404, "message": f"REQ {table} | Not Found"}
-    if not key or not value:
-        return {"status": 400, "message": f"REQ {table} | Bad Request"}
-    try:
-        db_any = (db.query(getattr(models, table)).filter(getattr(models, table).__dict__[key] == value).first().__dict__)
-        if db_any:
-            return True
-    except Exception as e:
-        pass
-    return False
-
 def _execute(db: Session, query: str = None):
     try:
-        db.execute(query)
+        cursor = db.execute(query)
         db.commit()
-        return True, {"status": 200, "message": f"REQ | Successfully executed"}
+        if cursor.rowcount > 0:
+            return True, {"status": 200, "message": f"REQ | Successfully executed"}
+        return False, {"status": 400, "message": f"REQ | Failed to execute"}
     except Exception as e:
         return False, e
 
