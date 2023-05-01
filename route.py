@@ -5,25 +5,17 @@ from typing import List, Dict, Any, Union
 from sqlalchemy.orm import Session
 
 from database import SessionLocal, engine, get_db
-import crud, models, schema
+import crud, models, schema, crud_v2
 
 app = fastapi.FastAPI()
 
-@app.post("/api/v2/{nickname}/{table}/create")
-async def create(nickname: str, table: str, data: Dict[str, Any], db: Session = fastapi.Depends(get_db)):
-    print(nickname, table, data)
-    if nickname == data["nickname"]:
-        return {"status": 200, "message": "Server is running"}
-    return {"status": 400, "message": "Something went wrong"}
-
-
-
-
-
-
-
-
-
+@app.post("/api/v2/insert/{table}")
+async def insert(table: str, data: Dict[str, Any], db: Session = fastapi.Depends(get_db)):
+    if table not in models.TABLES:
+        return {"detail": f"{table} is not in schema"}
+    if data['nickname'] == None and table != None and data != None:
+        return {"status": 400, "message": f"REQ => insert {table} | Bad Request"}
+    return crud_v2.insert(db, table, data)
 
 @app.get("/api/v1/nugu/create")
 async def create_nugu(nugu: schema.INSERT = None, db: Session = fastapi.Depends(get_db)):
