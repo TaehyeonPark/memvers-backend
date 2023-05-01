@@ -28,10 +28,10 @@ r_data = {
     "value": "source",
 }
 
-def operator(operation="insert", table="achivement", data=c_achivement_dummy):
+def operator(operation="insert", table="nugu", data=c_achivement_dummy):
     endpoint = f"http://{HOST}:{PORT}/api/v2/{operation}/{table}"
     response = requests.post(endpoint, json=data)
     print(response.json())
 
 if __name__ == "__main__":
-    operator()
+    operator('update', 'nugu', c_data)

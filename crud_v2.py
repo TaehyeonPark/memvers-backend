@@ -42,9 +42,16 @@ def insert(db: Session, table: str = None, data: Dict = None):
     except Exception as e:
         return {"status": 500, "message": f"REQ | {table} | {e}"}
 
-def update(db: Session, nickname=None, table: str = None, data: Dict = None):
+def update(db: Session, table: str = None, data: Dict = None):
     try:
-        rtn, msg = _execute(db=db, query=text(f"UPDATE {table} SET {', '.join([f'{key}={value}' for key, value in data.items()])} WHERE {PK}='{nickname}'"))
+        update_list = []
+        for key, value in data.items():
+            if key == PK:
+                continue
+            if value == None or value == '':
+                continue
+            update_list.append(f"{key}={value}")
+        rtn, msg = _execute(db=db, query=text(f"UPDATE {table} SET {', '.join(update_list)} WHERE {PK}='{data['nickname']}'"))
         return msg if rtn else {"status": 500, "message": f"REQ | {table} | {msg}"}
     except Exception as e:
         return {"status": 500, "message": f"REQ | {table} | {e}"}

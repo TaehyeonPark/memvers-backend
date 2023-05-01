@@ -17,6 +17,15 @@ async def insert(table: str, data: Dict[str, Any], db: Session = fastapi.Depends
         return {"status": 400, "message": f"REQ => insert {table} | Bad Request"}
     return crud_v2.insert(db, table, data)
 
+@app.post("/api/v2/update/{table}")
+async def update(table: str, data: Dict[str, Any], db: Session = fastapi.Depends(get_db)):
+    if table not in models.TABLES:
+        return {"detail": f"{table} is not in schema"}
+    if data['nickname'] == None and table != None and data != None:
+        return {"status": 400, "message": f"REQ => update {table} | Bad Request"}
+    return crud_v2.update(db, table, data)
+
+
 @app.get("/api/v1/nugu/create")
 async def create_nugu(nugu: schema.INSERT = None, db: Session = fastapi.Depends(get_db)):
     print(nugu)

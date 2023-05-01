@@ -53,5 +53,11 @@ class Outlink():
     outLink=Column(String(length=100), nullable=not True)
 
 ORMS = [Nugu, Footprint, Achivement, Stack, Outlink]
-TABLES = [table.__tablename__ for table in ORMS]
+TABLES = [table.__tablename__ for table in ORMS] # TABLES = ['nugu', 'footprint', 'achivement', 'stack', 'outlink']
 KEYS = [{ORM.__tablename__ : [key for key in ORM.__dict__.keys() if not key.startswith('_')]} for ORM in ORMS]
+# KEYS = [
+#   {'nugu': ['nickname', 'studentId', 'email', 'phoneNum', 'manager', 'dongbang', 'birthday', 'developer', 'designer', 'wheel', 'rnk', 'hide']},
+#   {'footprint': ['nickname', 'history', 'joinDate', 'project', 'pm', 'promotion']},
+#   {'achivement': ['nickname', 'content']}, {'stack': ['nickname', 'stackName']},
+#   {'outlink': ['nickname', 'outLink']}
+# ]
