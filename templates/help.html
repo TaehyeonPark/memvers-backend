@@ -1,0 +1,11 @@
+<h1>API v2</h1>
+<a href="/docs">Go to docs</a>
+<script>
+    time = 10
+    document.querySelector("h1").innerText = `API v2 | ${time}`
+    setInterval(() => {
+        time--
+        document.querySelector("h1").innerText = `API v2 | ${time}`
+        if (time == 0) window.location.href = "/docs"
+    }, 1000)
+</script>

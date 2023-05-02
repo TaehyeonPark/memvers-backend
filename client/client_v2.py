@@ -1,11 +1,14 @@
 
 import requests
 
+HOST = "localhost"
+PORT = 8000
+
 c_data = {
     "nickname": "source",
     "studentId": "20000101",
     "email": "",
-    "phoneNum": "01012345678",
+    "phoneNum": "0000000000",
     "manager": False,
     "dongbang": False,
     "birthday": "20040101",
@@ -15,15 +18,30 @@ c_data = {
     "rnk": 0,
     "hide": False,
 }
-r_data = {
-    "key": "nickname",
-    "value": "source",
+c_achivement_dummy = {
+    "nickname": "source",
+    "content": "dummy2",
 }
 
-def create(nickname="source", table="nugu", data=c_data):
-    endpoint = f"http://localhost:8000/api/v2/{nickname}/{table}/create"
+r_data = {
+    "nickname": "source",
+}
+
+def operator(operation="insert", table="nugu", data=c_achivement_dummy):
+    endpoint = f"http://{HOST}:{PORT}/api/v2/{operation}/{table}"
     response = requests.post(endpoint, json=data)
     print(response.json())
+
+def reader(operation="read", table="nugu", data=r_data):
+    endpoint = f"http://{HOST}:{PORT}/api/v2/{operation}/{table}"
     
+    formData = {
+        "data": data,
+        "mode": "NOT",
+    }
+    
+    response = requests.post(endpoint, json=formData)
+    print(response.json())
+
 if __name__ == "__main__":
-    create()
+    reader(operation="read", table="nugu", data=c_data)

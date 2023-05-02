@@ -1,6 +1,7 @@
 # Path: workspace/memvers/memvers/schema.py
 
 from pydantic import BaseModel
+from typing import List, Dict, Any, Union, Optional
 
 class Nugu(BaseModel):
     nickname: str
@@ -56,6 +57,17 @@ class INSERT(BaseModel):
     # stackName: str # Stack
 
     # outlink: str # Outlink
+
+class HELP(BaseModel):
+    Nugu: Nugu
+    Footprint: Footprint
+    Achivement: Achivement
+    Stack: Stack
+    Outlink: Outlink
+
+class READ(BaseModel):
+    data: Dict[str, Any]
+    mode: str
 
 
 SCHEMAS = [Nugu, Footprint, Achivement, Stack, Outlink, INSERT]

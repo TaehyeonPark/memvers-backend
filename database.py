@@ -23,22 +23,23 @@ class Conn():
         self.USERNAME = USERNAME    if USERNAME is not None else self.USERNAME
         self.DATABASE = DATABASE    if DATABASE is not None else self.DATABASE
 
-    def url_maker(self) -> str:
+    def _url_maker(self) -> str:
         return f'mysql+pymysql://{self.USERNAME}:{self.PASSWORD}@{self.HOSTNAME}:{self.PORT}/{self.DATABASE}'
     
     def engine_maker(self) -> str:
-        return create_engine(self.url_maker())
+        return create_engine(self._url_maker())
 
     def session_maker(self, engine) -> str:
         return sessionmaker(bind=engine)
 
     def base_maker(self) -> str:
         return declarative_base()
-    
+
 conn = Conn(HOSTNAME='localhost', PASSWORD=getpass.getpass('password: '))
 engine = conn.engine_maker()
 SessionLocal = conn.session_maker(engine)
 Base = conn.base_maker()
+Cursor = engine.connect().connection.cursor()
 
 def get_db():
     db = SessionLocal()
