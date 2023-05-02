@@ -57,5 +57,11 @@ class INSERT(BaseModel):
 
     # outlink: str # Outlink
 
+class HELP(BaseModel):
+    Nugu: Nugu
+    Footprint: Footprint
+    Achivement: Achivement
+    Stack: Stack
+    Outlink: Outlink
 
 SCHEMAS = [Nugu, Footprint, Achivement, Stack, Outlink, INSERT]

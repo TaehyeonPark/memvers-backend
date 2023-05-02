@@ -24,8 +24,7 @@ c_achivement_dummy = {
 }
 
 r_data = {
-    "key": "nickname",
-    "value": "source",
+    "nickname": "source",
 }
 
 def operator(operation="insert", table="nugu", data=c_achivement_dummy):
@@ -34,4 +33,4 @@ def operator(operation="insert", table="nugu", data=c_achivement_dummy):
     print(response.json())
 
 if __name__ == "__main__":
-    operator('read', 'nugu', c_data)
+    operator('read', 'footprint', r_data)

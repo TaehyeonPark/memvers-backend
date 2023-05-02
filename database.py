@@ -34,7 +34,7 @@ class Conn():
 
     def base_maker(self) -> str:
         return declarative_base()
-    
+
 conn = Conn(HOSTNAME='localhost', PASSWORD=getpass.getpass('password: '))
 engine = conn.engine_maker()
 SessionLocal = conn.session_maker(engine)

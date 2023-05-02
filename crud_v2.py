@@ -2,7 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 import pymysql
 
-from typing import Dict
+from typing import Dict, List, Tuple, Any, Union
 
 import models, schema
 from util import Comp, Validate
@@ -41,6 +41,8 @@ def insert(db: Session, table: str = None, data: Dict = None):
         return msg if rtn else {"status": 500, "message": f"REQ | {table} | {msg}"}
     except Exception as e:
         return {"status": 500, "message": f"REQ | {table} | {e}"}
+    finally:
+        db.close()
 
 def update(db: Session, table: str = None, data: Dict = None): # Needed: Different edition level by privilige.
     try:
@@ -55,13 +57,25 @@ def update(db: Session, table: str = None, data: Dict = None): # Needed: Differe
         return msg if rtn else {"status": 500, "message": f"REQ | {table} | {msg}"}
     except Exception as e:
         return {"status": 500, "message": f"REQ | {table} | {e}"}
-    
-def read(db: Session, table: str = None, data: Dict = None, mode: str = "exact"):
+    finally:
+        db.close()
+def read(db: Session, table: str = None, data: Dict = None, mode: str = "exact") -> Dict:
     try:
         rtn = []
         cursor = db.execute(text(f"SELECT * FROM {table} WHERE {PK}='{data['nickname']}'"))
+        db.commit()
+        keys = None
+        for key in models.KEYS:
+            if list(key.keys())[0] == table:
+                keys = key[list(key.keys())[0]]
+                break
         for row in cursor.fetchall():
-            rtn.append(dict(row))
-        return {"status": 200, "message": f"REQ | {table} | {rtn}"}
+            tmp = {}
+            for i in range(len(keys)):
+                tmp[keys[i]] = row[i]
+            rtn.append(tmp)
+        return {"status": 200, "message": "succesfully executed", "data": rtn}
     except Exception as e:
         return {"status": 500, "message": f"REQ | {table} | {e}"}
+    finally:
+        db.close()
