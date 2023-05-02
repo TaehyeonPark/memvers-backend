@@ -59,22 +59,34 @@ def update(db: Session, table: str = None, data: Dict = None): # Needed: Differe
         return {"status": 500, "message": f"REQ | {table} | {e}"}
     finally:
         db.close()
+
 def read(db: Session, table: str = None, data: Dict = None, mode: str = "exact") -> Dict:
     try:
         rtn = []
-        cursor = db.execute(text(f"SELECT * FROM {table} WHERE {PK}='{data['nickname']}'"))
+        _constraints = []
+        
+        for key, value in data.items():
+            if value == None or value == '':
+                continue
+            _constraints.append(f"{key}='{value}'")
+        
+        cursor = db.execute(text(f"SELECT * FROM {table} WHERE {' AND '.join(_constraints)} ORDER BY {PK}"))
         db.commit()
+
         keys = None
+
         for key in models.KEYS:
             if list(key.keys())[0] == table:
                 keys = key[list(key.keys())[0]]
                 break
+    
         for row in cursor.fetchall():
             tmp = {}
             for i in range(len(keys)):
                 tmp[keys[i]] = row[i]
             rtn.append(tmp)
-        return {"status": 200, "message": "succesfully executed", "data": rtn}
+
+        return rtn
     except Exception as e:
         return {"status": 500, "message": f"REQ | {table} | {e}"}
     finally:

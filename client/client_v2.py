@@ -33,4 +33,4 @@ def operator(operation="insert", table="nugu", data=c_achivement_dummy):
     print(response.json())
 
 if __name__ == "__main__":
-    operator('read', 'footprint', r_data)
+    operator('read', 'achivement', r_data)
