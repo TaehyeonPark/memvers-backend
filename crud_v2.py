@@ -60,7 +60,7 @@ def update(db: Session, table: str = None, data: Dict = None): # Needed: Differe
     finally:
         db.close()
 
-def read(db: Session, table: str = None, data: Dict = None, mode: str = "exact") -> Dict:
+def read(db: Session, table: str = None, data: Dict = None, mode: str = "AND") -> Dict:
     try:
         rtn = []
         _constraints = []
@@ -69,8 +69,27 @@ def read(db: Session, table: str = None, data: Dict = None, mode: str = "exact")
             if value == None or value == '':
                 continue
             _constraints.append(f"{key}='{value}'")
+        print(_constraints)
+        print(mode)
         
-        cursor = db.execute(text(f"SELECT * FROM {table} WHERE {' AND '.join(_constraints)} ORDER BY {PK}"))
+        print((f"SELECT * FROM {table} WHERE {' AND '.join(_constraints)} ORDER BY {PK}"))
+        print((f"SELECT * FROM {table} WHERE {' OR '.join(_constraints)} ORDER BY {PK}"))
+        print((f"SELECT * FROM {table} WHERE {' XOR '.join(_constraints)} ORDER BY {PK}"))
+        print((f"SELECT * FROM {table} WHERE NOT {' AND NOT '.join(_constraints)} ORDER BY {PK}"))
+
+        cursor = None
+        
+        if mode == "AND":
+            cursor = db.execute(text(f"SELECT * FROM {table} WHERE {' AND '.join(_constraints)} ORDER BY {PK}"))
+        elif mode == "OR":
+            cursor = db.execute(text(f"SELECT * FROM {table} WHERE {' OR '.join(_constraints)} ORDER BY {PK}"))
+        elif mode == "XOR":
+            cursor = db.execute(text(f"SELECT * FROM {table} WHERE {' XOR '.join(_constraints)} ORDER BY {PK}"))
+        elif mode == "NOT":
+            cursor = db.execute(text(f"SELECT * FROM {table} WHERE NOT {' AND NOT '.join(_constraints)} ORDER BY {PK}"))
+        else:
+            return {"status": 400, "message": f"REQ | {table} | Invalid mode", "data": None}
+        
         db.commit()
 
         keys = None

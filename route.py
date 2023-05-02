@@ -43,12 +43,14 @@ async def update(table: str, data: Dict[str, Any], db: Session = fastapi.Depends
         return {"status": 400, "message": f"REQ => Fail to update {table} | Bad Request", "data": None}
     return crud_v2.update(db, table, data)
 
+
 @app.post("/api/v2/read/{table}")
-async def read(table: str, data: Dict[str, Any], db: Session = fastapi.Depends(get_db)):
+async def read(table: str, data: schema.READ, db: Session = fastapi.Depends(get_db)):
+    data, mode = data.data, data.mode
+    
     if table not in models.TABLES:
         return {"detail": f"{table} is not in schema", "data": None}
 
-    rtn = {}
     _data = data.copy()
     _keys = None
     for i in models.KEYS:
@@ -59,17 +61,27 @@ async def read(table: str, data: Dict[str, Any], db: Session = fastapi.Depends(g
     for _key in list(_data.keys()):
         if _key not in _keys:
             _data.pop(_key)
-    rtn[table] = crud_v2.read(db, table, _data)
-    return rtn
+    rtn = crud_v2.read(db, table, _data, mode=mode.upper())
+    return {"status": 200, "message": f"REQ => Success to read {table}", "data": rtn}
 
 
 # @app.post("/api/v2/read/{table}")
-# async def read(table: str, data: Dict[str, Any], db: Session = fastapi.Depends(get_db)):
+# async def read(table: str, data: Dict[str, Any], mode: str = "AND", db: Session = fastapi.Depends(get_db)):
 #     if table not in models.TABLES:
-#         return {"detail": f"{table} is not in schema"}
-#     if data['nickname'] == None and table != None and data != None:
-#         return {"status": 400, "message": f"REQ => Fail to read {table} | Bad Request", "data": None}
-#     return crud_v2.read(db, table, data)
+#         return {"detail": f"{table} is not in schema", "data": None}
+
+#     _data = data.copy()
+#     _keys = None
+#     for i in models.KEYS:
+#         _table = list(i.keys())[0]
+#         if _table == table:
+#             _keys = i[_table]
+#             break
+#     for _key in list(_data.keys()):
+#         if _key not in _keys:
+#             _data.pop(_key)
+#     rtn = crud_v2.read(db, table, _data, mode=mode.upper())
+#     return {"status": 200, "message": f"REQ => Success to read {table}", "data": rtn}
 
 if __name__ == '__main__':
     run(host='0.0.0.0', port=8000, app=app)

@@ -32,5 +32,16 @@ def operator(operation="insert", table="nugu", data=c_achivement_dummy):
     response = requests.post(endpoint, json=data)
     print(response.json())
 
+def reader(operation="read", table="nugu", data=r_data):
+    endpoint = f"http://{HOST}:{PORT}/api/v2/{operation}/{table}"
+    
+    formData = {
+        "data": data,
+        "mode": "NOT",
+    }
+    
+    response = requests.post(endpoint, json=formData)
+    print(response.json())
+
 if __name__ == "__main__":
-    operator('read', 'achivement', r_data)
+    reader(operation="read", table="nugu", data=c_data)
