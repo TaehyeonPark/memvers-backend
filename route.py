@@ -9,6 +9,7 @@ from uvicorn import run
 from typing import List, Dict, Any, Union, Optional
 
 from sqlalchemy.orm import Session
+from redis import Redis
 
 from database import SessionLocal, engine, get_db
 import crud, models, schema, crud_v2
@@ -63,25 +64,6 @@ async def read(table: str, data: schema.READ, db: Session = fastapi.Depends(get_
             _data.pop(_key)
     rtn = crud_v2.read(db, table, _data, mode=mode.upper())
     return {"status": 200, "message": f"REQ => Success to read {table}", "data": rtn}
-
-
-# @app.post("/api/v2/read/{table}")
-# async def read(table: str, data: Dict[str, Any], mode: str = "AND", db: Session = fastapi.Depends(get_db)):
-#     if table not in models.TABLES:
-#         return {"detail": f"{table} is not in schema", "data": None}
-
-#     _data = data.copy()
-#     _keys = None
-#     for i in models.KEYS:
-#         _table = list(i.keys())[0]
-#         if _table == table:
-#             _keys = i[_table]
-#             break
-#     for _key in list(_data.keys()):
-#         if _key not in _keys:
-#             _data.pop(_key)
-#     rtn = crud_v2.read(db, table, _data, mode=mode.upper())
-#     return {"status": 200, "message": f"REQ => Success to read {table}", "data": rtn}
 
 if __name__ == '__main__':
     run(host='0.0.0.0', port=8000, app=app)
