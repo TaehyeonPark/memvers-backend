@@ -17,7 +17,7 @@ def _execute(db: Session, query: str = None):
     try:
         cursor = db.execute(query)
         db.commit()
-        if cursor.rowcount > 0:
+        if cursor.  rowcount > 0:
             return True, {"status": 200, "message": f"REQ | Successfully executed"}
         return False, {"status": 400, "message": f"REQ | Failed to execute"}
     except Exception as e:
@@ -69,16 +69,8 @@ def read(db: Session, table: str = None, data: Dict = None, mode: str = "AND") -
             if value == None or value == '':
                 continue
             _constraints.append(f"{key}='{value}'")
-        print(_constraints)
-        print(mode)
-        
-        print((f"SELECT * FROM {table} WHERE {' AND '.join(_constraints)} ORDER BY {PK}"))
-        print((f"SELECT * FROM {table} WHERE {' OR '.join(_constraints)} ORDER BY {PK}"))
-        print((f"SELECT * FROM {table} WHERE {' XOR '.join(_constraints)} ORDER BY {PK}"))
-        print((f"SELECT * FROM {table} WHERE NOT {' AND NOT '.join(_constraints)} ORDER BY {PK}"))
 
         cursor = None
-        
         if mode == "AND":
             cursor = db.execute(text(f"SELECT * FROM {table} WHERE {' AND '.join(_constraints)} ORDER BY {PK}"))
         elif mode == "OR":
@@ -91,7 +83,6 @@ def read(db: Session, table: str = None, data: Dict = None, mode: str = "AND") -
             return {"status": 400, "message": f"REQ | {table} | Invalid mode", "data": None}
         
         db.commit()
-
         keys = None
 
         for key in models.KEYS:

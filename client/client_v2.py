@@ -39,9 +39,42 @@ def reader(operation="read", table="nugu", data=r_data):
         "data": data,
         "mode": "NOT",
     }
-    
+    from json import dumps
+    print(dumps(formData))
+    print(formData)
+    from time import time
+
+    start = time()
     response = requests.post(endpoint, json=formData)
+    # response = requests.get('http://127.0.0.1:8000/')
+    end = time()
+    print(f"Time=> {end-start}")
+    
     print(response.json())
 
+def index(operation="read", table="nugu", data=r_data):
+    endpoint = f"http://{HOST}:{PORT}/"
+    print(f"reqest : {endpoint}")
+    
+    from time import time
+
+    start = time()
+    response = requests.get(endpoint)
+    end = time()
+    print(f"Time=> {end-start}")
+    
+    print(response.json())
+
+
+
 if __name__ == "__main__":
-    reader(operation="read", table="nugu", data=c_data)
+    while True:
+        query = input("Query: ")
+        print(query)
+        if query == "exit":
+            print("Bye")
+            break
+        elif query == '1':
+            reader(operation="read", table="nugu", data=r_data)
+        elif query == '2':
+            index()
