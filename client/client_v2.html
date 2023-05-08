@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Client v2</title>
+    </head>
+    <body>
+        <button onclick="read_table()">
+            Read
+        </button>
+        <div id="main">
+        </div>
+    </body>
+</html>
+
+
+
+
+<script>
+    let HOST = "localhost";
+    let PORT = 8000;
+    let read_url = "http://" + HOST + ":" + PORT + "/api/v2/read/";
+
+    function read_table() {
+        console.log("read_table()");
+
+        let xhr = new XMLHttpRequest();
+        url = read_url + "nugu";
+        console.log(url);
+        xhr.open("GET", url, true);
+        
+        xhr.onload = () => {
+            if (xhr.status == 200) {
+                document.getElementById("main").innerHTML = xhr.responseText;
+            } else {
+                console.log("Error", xhr.statusText);
+            }
+        };
+    }
+</script>

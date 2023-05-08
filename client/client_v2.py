@@ -20,7 +20,6 @@ c_data = {
 }
 c_achivement_dummy = {
     "nickname": "source",
-    "content": "dummy2",
 }
 
 r_data = {
@@ -65,7 +64,17 @@ def index(operation="read", table="nugu", data=r_data):
     
     print(response.json())
 
+def debugging_read():
+    from time import time
 
+    start = time()
+    
+    endpoint = f"http://127.0.0.1:8000/api/v2/read/nugu"
+    response = requests.post(endpoint)
+    end = time()
+    print(f"Time=> {end-start}")
+
+    print(response.json())
 
 if __name__ == "__main__":
     while True:
@@ -78,3 +87,5 @@ if __name__ == "__main__":
             reader(operation="read", table="nugu", data=r_data)
         elif query == '2':
             index()
+        elif query == '3':
+            debugging_read()

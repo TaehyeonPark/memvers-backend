@@ -45,7 +45,7 @@ async def update(table: str, data: Dict[str, Any], db: Session = fastapi.Depends
 @app.post("/api/v2/read/{table}")
 async def read(table: str, data: schema.READ, db: Session = fastapi.Depends(get_db)):
     data, mode = data.data, data.mode
-    
+    print(data, mode)    
     if table not in models.TABLES:
         return {"detail": f"{table} is not in schema", "data": None}
 

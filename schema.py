@@ -37,6 +37,10 @@ class Outlink(BaseModel):
     nickname: str
     outLink: str
 
+class Project(BaseModel):
+    nickname: str
+    project: str
+    current: bool
 
 class INSERT(BaseModel):
     Nugu: Nugu
@@ -46,17 +50,6 @@ class INSERT(BaseModel):
     Stack: Stack
     Outlink: Outlink
 
-    # history: str # Footprint
-    # joinDate: bool
-    # project: str
-    # pm: str
-    # promotion: str
-
-    # content: str # Achivement
-    
-    # stackName: str # Stack
-
-    # outlink: str # Outlink
 
 class HELP(BaseModel):
     Nugu: Nugu
