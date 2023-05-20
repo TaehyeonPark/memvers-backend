@@ -20,22 +20,19 @@ class Nugu(BaseModel):
 class Footprint(BaseModel):
     nickname: str
     history: str
-    joinDate: bool
-    project: str
-    pm: str
-    promotion: str
+    content: str
 
-class Achivement(BaseModel):
+class Achievement(BaseModel):
     nickname: str
     content: str
 
 class Stack(BaseModel):
     nickname: str
-    stackName: str
+    stack: str
 
 class Outlink(BaseModel):
     nickname: str
-    outLink: str
+    outlink: str
 
 class Project(BaseModel):
     nickname: str
@@ -46,7 +43,7 @@ class INSERT(BaseModel):
     Nugu: Nugu
 
     Footprint: Footprint
-    Achivement: Achivement
+    Achievement: Achievement
     Stack: Stack
     Outlink: Outlink
 
@@ -54,7 +51,7 @@ class INSERT(BaseModel):
 class HELP(BaseModel):
     Nugu: Nugu
     Footprint: Footprint
-    Achivement: Achivement
+    Achievement: Achievement
     Stack: Stack
     Outlink: Outlink
 
@@ -63,4 +60,4 @@ class READ(BaseModel):
     mode: str
 
 
-SCHEMAS = [Nugu, Footprint, Achivement, Stack, Outlink, INSERT]
+SCHEMAS = [Nugu, Footprint, Achievement, Stack, Outlink, INSERT]

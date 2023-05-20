@@ -23,7 +23,6 @@ def newPassword(pw):
     return ['-s', escape(pw)]
 def file(path):
     return ['-f', escape(path)]
-
 adminPass = password(adminPassword)
 searchSuffix = ['-x', '-LLL', '-b', 'ou=People,dc=sparcs,dc=org', '|', 'grep', 'uidNumber:']
 
@@ -53,9 +52,11 @@ async def passwdByAdmin(un, npass):
     if un and npass:
         result = await e([command] + host + admin + adminPass + newPassword(npass) + ['-S'] + dnOnly(un))
         if result.returncode != 0 or len(result.stdout) != 0 or len(result.stderr) != 0:
-            raise Exception({'command': command, 'err': result.returncode, 'stdout': result.stdout, 'stderr': result.stderr})
+            print(Exception({'command': command, 'err': result.returncode, 'stdout': result.stdout, 'stderr': result.stderr}))
+            # raise Exception({'command': command, 'err': result.returncode, 'stdout': result.stdout, 'stderr': result.stderr})
     else:
-        raise Exception({'command': command, 'un': un, 'npass': npass})
+        print(Exception({'command': command, 'un': un, 'npass': npass}))
+        # raise Exception({'command': command, 'un': un, 'npass': npass})
 
 async def uids():
     command = 'ldapsearch'
@@ -65,12 +66,14 @@ async def uids():
     else:
         return [int(s.strip()) for s in result.stdout.replace('uidNumber: ', '').split('\n')]
 
-def add(path):
-    command = 'ldapadd'
-    if path:
-        return e([command, host, admin, adminPass, file(path)]).then(lambda result: None).catch(lambda err: {'command': command, 'err': err})
-    else:
-        return {'command': command, 'path': None}
+def addUser(un: str, pw: str, conn: ldap3.Connection):
+    try:
+        conn.add(
+            dn=dnOnly(un),
+        )
+    except ldap3.core.exceptions.LDAPBindError as e:
+        return False
+    
 
 def delete(un):
     command = 'ldapdelete'
@@ -105,6 +108,27 @@ def bind(un, pw):
         conn = ldap3.Connection(server, dn, pw, auto_bind=True)
         return True
     except ldap3.core.exceptions.LDAPBindError as e:
+        return False
+
+def IsWheel(un, pw) -> bool:
+    dn = f'cn=wheel,ou=Group,dc=sparcs,dc=org'
+    try:
+        server = ldap3.Server(host=ldapHost, get_info=ldap3.ALL)
+        conn = ldap3.Connection(server, dn, pw, auto_bind=True)
+        conn.search('cn=wheel,ou=Group,dc=sparcs,dc=org', '(objectclass=posixGroup)', attributes=['memberUid'])
+        if un in conn.entries[0]['memberUid']:
+            return True
+        return False
+    except ldap3.core.exceptions.LDAPBindError as e:
+        return False
+def IsAdmin(pw) -> bool:
+    dn = f'cn=admin,dc=sparcs,dc=org'
+    server = ldap3.Server(host=ldapHost, get_info=ldap3.ALL)
+    conn = None
+    try:
+        conn = ldap3.Connection(server, dn, pw, auto_bind=True)
+        return True
+    except ldap3.core.exceptions.LDAPBindError as e:
         print(e)
         return False
 
@@ -114,14 +138,7 @@ if __name__ == "__main__":
     un = input('Username: ')
     pw = getpass('Password: ')
     dn = f'uid={un},ou=People,dc=sparcs,dc=org'
-    server = ldap3.Server(address, get_info=ldap3.ALL)
-    conn = None
-    try:
-        conn = ldap3.Connection(server, dn, pw, auto_bind=True)
-    except ldap3.core.exceptions.LDAPBindError as e:
-        print(e)
-        exit(1)
-    
-    conn.search('ou=People,dc=sparcs,dc=org', '(objectclass=posixAccount)', attributes=['uidNumber'])
-
-    print(conn.entries[0]['uidNumber'])
+    server = ldap3.Server(host=address, get_info=ldap3.ALL)
+    conn = ldap3.Connection(server, dn, pw, auto_bind=True)
+    conn.search('cn=wheel,ou=Group,dc=sparcs,dc=org', '(objectclass=posixGroup)', attributes=['memberUid'])
+    print(conn.entries[0]['memberUid'])
