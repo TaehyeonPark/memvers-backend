@@ -1,4 +1,4 @@
-def error_template(error_code: int, title: str, desc: str, redirect_url: str, redirect_desc: str) -> str:
+def error_template(error_code: int = 404, title: str = "", desc: str = "", redirect_url: str = "", redirect_desc: str = "") -> str:
     f"""<!DOCTYPE html>
 <html lang="en">
     <head>

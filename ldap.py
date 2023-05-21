@@ -58,6 +58,14 @@ async def passwdByAdmin(un, npass):
         print(Exception({'command': command, 'un': un, 'npass': npass}))
         # raise Exception({'command': command, 'un': un, 'npass': npass})
 
+def delete(un):
+    command = 'ldapdelete'
+    if un:
+        return e([command, host, admin, adminPass, dnOnly(un)]).then(lambda result: None).catch(lambda err: {'command': command, 'err': err})
+    else:
+        return {'command': command, 'un': None}
+
+
 async def uids():
     command = 'ldapsearch'
     result = await e([command] + host + admin + adminPass + searchSuffix)
@@ -66,21 +74,33 @@ async def uids():
     else:
         return [int(s.strip()) for s in result.stdout.replace('uidNumber: ', '').split('\n')]
 
-def addUser(un: str, pw: str, conn: ldap3.Connection):
+def addUser(un: str, adminpw: str) -> bool:
     try:
-        conn.add(
-            dn=dnOnly(un),
-        )
+        conn = ldap3.Connection(ldap3.Server(host=ldapHost, get_info=ldap3.ALL), user='cn=admin,dc=sparcs,dc=org', password=adminpw, auto_bind=True)
+        from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups
+        ad_add_members_to_groups(conn, dnOnly(un))
+        return True
     except ldap3.core.exceptions.LDAPBindError as e:
         return False
-    
 
-def delete(un):
-    command = 'ldapdelete'
-    if un:
-        return e([command, host, admin, adminPass, dnOnly(un)]).then(lambda result: None).catch(lambda err: {'command': command, 'err': err})
-    else:
-        return {'command': command, 'un': None}
+def resetPassword(un: str, npass: str, adminpw: str) -> bool:
+    try:
+        conn = ldap3.Connection(ldap3.Server(host=ldapHost, get_info=ldap3.ALL), user='cn=admin,dc=sparcs,dc=org', password=adminpw, auto_bind=True)
+        from ldap3.extend.microsoft.modifyPassword import ad_modify_password
+        ad_modify_password(connection=conn, user_dn=dnOnly(un), new_password=npass,old_password=None)
+        return True
+    except ldap3.core.exceptions.LDAPBindError as e:
+        return False
+
+def deleteUser(un: str, adminpw: str) -> bool:
+    try:
+        conn = ldap3.Connection(ldap3.Server(host=ldapHost, get_info=ldap3.ALL), user='cn=admin,dc=sparcs,dc=org', password=adminpw, auto_bind=True)
+        from ldap3.extend.microsoft.removeMembersFromGroups import ad_remove_members_from_groups
+        ad_remove_members_from_groups(connection=conn, members_dn=dnOnly(un), groups_dn=None)
+        return True
+    except ldap3.core.exceptions.LDAPBindError as e:
+        return False
+
 
 def ldif(un, uid):
   return '\n'.join([
@@ -101,14 +121,17 @@ def ldif(un, uid):
     f"mail: {un}@sparcs.org"
   ])
 
-def bind(un, pw):
+def bind(un, pw) -> bool:
     dn = f'uid={un},ou=People,dc=sparcs,dc=org'
     try:
         server = ldap3.Server(host=ldapHost, get_info=ldap3.ALL)
         conn = ldap3.Connection(server, dn, pw, auto_bind=True)
         return True
     except ldap3.core.exceptions.LDAPBindError as e:
-        return False
+        if e.args[0]['desc'] == 'Invalid credentials':
+            return False
+        else:
+            raise e
 
 def IsWheel(un, pw) -> bool:
     dn = f'cn=wheel,ou=Group,dc=sparcs,dc=org'
@@ -140,5 +163,7 @@ if __name__ == "__main__":
     dn = f'uid={un},ou=People,dc=sparcs,dc=org'
     server = ldap3.Server(host=address, get_info=ldap3.ALL)
     conn = ldap3.Connection(server, dn, pw, auto_bind=True)
-    conn.search('cn=wheel,ou=Group,dc=sparcs,dc=org', '(objectclass=posixGroup)', attributes=['memberUid'])
-    print(conn.entries[0]['memberUid'])
+    # conn.search('cn=wheel,ou=Group,dc=sparcs,dc=org', '(objectclass=posixGroup)', attributes=['memberUid'])
+    # print(conn.entries[0]['memberUid'])
+    conn.search("ou=People,dc=sparcs,dc=org", f"(objectclass=organizationalUnit)", attributes=['uidNumber'])
+    print(conn.entries[0]['uidNumber'])

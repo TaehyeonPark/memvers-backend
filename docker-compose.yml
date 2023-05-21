@@ -7,10 +7,10 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_ROOT_PASSWORD: 12345678 # change this password
       MYSQL_DATABASE: memvers
       MYSQL_USER: wheel
-      MYSQL_PASSWORD: 12345678
+      MYSQL_PASSWORD: 12345678 # change this password
 
   memvers-admin-cashserver:
     container_name: memvers-admin-cashserver
