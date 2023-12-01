@@ -1,0 +1,8 @@
+cryptography
+fastapi
+uvicorn
+sqlalchemy
+redis
+# pyproject-toml
+# python-ldap
+ldap3 # alt to python-ldap

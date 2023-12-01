@@ -1,0 +1,25 @@
+version: '1.0'
+
+services:
+  memvers-database:
+    container_name: memvers-database
+    image: mysql:8.0
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678 # change this password
+      MYSQL_DATABASE: memvers
+      MYSQL_USER: wheel
+      MYSQL_PASSWORD: 12345678 # change this password
+
+  memvers-admin-cashserver:
+    container_name: memvers-admin-cashserver
+    image: redis:7.0
+    ports:
+      - 6379:6379
+  
+  memvers-cashserver:
+    container_name: memvers-cashserver
+    image: redis:7.0
+    ports:
+      - 6378:6379
